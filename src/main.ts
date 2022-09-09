@@ -14,6 +14,8 @@ async function run(): Promise<void> {
       const result = await octokit.request(diff_url)
       const files = parse(result.data)
       const fileTolist = files.map(file => `${file.to}`)
+      core.debug(`File list: ${JSON.stringify(fileTolist)}`)
+      core.debug(`Pattern list: ${JSON.stringify(requiredFilePatterns)}`)
       const unmatched = requiredFilePatterns;
       for (const pattern of requiredFilePatterns) {
         if (minimatch.match(fileTolist, pattern)) {

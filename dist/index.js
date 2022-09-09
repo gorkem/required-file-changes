@@ -54,6 +54,8 @@ function run() {
                 const result = yield octokit.request(diff_url);
                 const files = (0, parse_diff_1.default)(result.data);
                 const fileTolist = files.map(file => `${file.to}`);
+                core.debug(`File list: ${JSON.stringify(fileTolist)}`);
+                core.debug(`Pattern list: ${JSON.stringify(requiredFilePatterns)}`);
                 const unmatched = requiredFilePatterns;
                 for (const pattern of requiredFilePatterns) {
                     if (minimatch.match(fileTolist, pattern)) {
