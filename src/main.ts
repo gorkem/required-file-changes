@@ -8,7 +8,6 @@ async function run(): Promise<void> {
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)
     const requiredFilePatterns = core.getMultilineInput('filePatterns')
-
     if (requiredFilePatterns && github.context.payload.pull_request) {
       const diff_url = github.context.payload.pull_request?.diff_url
       const result = await octokit.request(diff_url)
@@ -18,13 +17,14 @@ async function run(): Promise<void> {
       core.debug(`Pattern list: ${JSON.stringify(requiredFilePatterns)}`)
       const unmatched = requiredFilePatterns
       for (const pattern of requiredFilePatterns) {
-        if (minimatch.match(fileTolist, pattern)) {
+        if (minimatch.match(fileTolist, pattern).length > 0) {
           const patternIndex = unmatched.indexOf(pattern)
           if (patternIndex > -1) {
             unmatched.splice(patternIndex, 1)
           }
         }
       }
+      core.debug(`Unmatched: ${unmatched}`)
       if (unmatched.length > 0) {
         core.setFailed(
           `All required file patterns are not satisfied. No matching files for pattern ${unmatched[0]}`
