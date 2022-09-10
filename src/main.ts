@@ -9,14 +9,14 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(token)
     const requiredFilePatterns = core.getMultilineInput('filePatterns')
 
-    if (requiredFilePatterns) {
+    if (requiredFilePatterns && github.context.payload.pull_request) {
       const diff_url = github.context.payload.pull_request?.diff_url
       const result = await octokit.request(diff_url)
       const files = parse(result.data)
       const fileTolist = files.map(file => `${file.to}`)
       core.debug(`File list: ${JSON.stringify(fileTolist)}`)
       core.debug(`Pattern list: ${JSON.stringify(requiredFilePatterns)}`)
-      const unmatched = requiredFilePatterns;
+      const unmatched = requiredFilePatterns
       for (const pattern of requiredFilePatterns) {
         if (minimatch.match(fileTolist, pattern)) {
           const patternIndex = unmatched.indexOf(pattern)
