@@ -49,7 +49,7 @@ function run() {
             const token = core.getInput('token');
             const octokit = github.getOctokit(token);
             const requiredFilePatterns = core.getMultilineInput('filePatterns');
-            if (requiredFilePatterns) {
+            if (requiredFilePatterns && github.context.payload.pull_request) {
                 const diff_url = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.diff_url;
                 const result = yield octokit.request(diff_url);
                 const files = (0, parse_diff_1.default)(result.data);
@@ -58,13 +58,14 @@ function run() {
                 core.debug(`Pattern list: ${JSON.stringify(requiredFilePatterns)}`);
                 const unmatched = requiredFilePatterns;
                 for (const pattern of requiredFilePatterns) {
-                    if (minimatch.match(fileTolist, pattern)) {
+                    if (minimatch.match(fileTolist, pattern).length > 0) {
                         const patternIndex = unmatched.indexOf(pattern);
                         if (patternIndex > -1) {
                             unmatched.splice(patternIndex, 1);
                         }
                     }
                 }
+                core.debug(`Unmatched: ${unmatched}`);
                 if (unmatched.length > 0) {
                     core.setFailed(`All required file patterns are not satisfied. No matching files for pattern ${unmatched[0]}`);
                 }
