@@ -8,7 +8,11 @@ async function run(): Promise<void> {
     const token = core.getInput('token')
     const octokit = github.getOctokit(token)
     const requiredFilePatterns = core.getMultilineInput('filePatterns')
-    if (requiredFilePatterns && github.context.payload.pull_request) {
+    if (
+      github.context.payload.pull_request &&
+      !skipChecks() &&
+      requiredFilePatterns
+    ) {
       const diff_url = github.context.payload.pull_request?.diff_url
       const result = await octokit.request(diff_url)
       const files = parse(result.data)
@@ -37,3 +41,16 @@ async function run(): Promise<void> {
 }
 
 run()
+
+function skipChecks(): boolean {
+  const skipLabels = core.getMultilineInput('skipLabels')
+  if (skipLabels && github.context.payload.pull_request?.labels) {
+    const labels: string[] = github.context.payload.pull_request?.labels
+    for (const skipLabel of skipLabels) {
+      if (labels.findIndex(label => label === skipLabel) > 0) {
+        return true
+      }
+    }
+  }
+  return false
+}

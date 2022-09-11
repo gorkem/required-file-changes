@@ -13,6 +13,10 @@ inputs:
     required: true
     description: >
       The file patterns that must be satisfied by the changes included on the pull request
+  skipLabels:
+    required: false
+    description: >
+      List of labels that this check should be skipped for  
 runs:
   using: 'node16'
   main: 'dist/index.js'

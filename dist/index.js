@@ -49,7 +49,9 @@ function run() {
             const token = core.getInput('token');
             const octokit = github.getOctokit(token);
             const requiredFilePatterns = core.getMultilineInput('filePatterns');
-            if (requiredFilePatterns && github.context.payload.pull_request) {
+            if (github.context.payload.pull_request &&
+                !skipChecks() &&
+                requiredFilePatterns) {
                 const diff_url = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.diff_url;
                 const result = yield octokit.request(diff_url);
                 const files = (0, parse_diff_1.default)(result.data);
@@ -78,6 +80,19 @@ function run() {
     });
 }
 run();
+function skipChecks() {
+    var _a, _b;
+    const skipLabels = core.getMultilineInput('skipLabels');
+    if (skipLabels && ((_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.labels)) {
+        const labels = (_b = github.context.payload.pull_request) === null || _b === void 0 ? void 0 : _b.labels;
+        for (const skipLabel of skipLabels) {
+            if (labels.findIndex(label => label === skipLabel) > 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 
 /***/ }),
