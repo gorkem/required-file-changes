@@ -1,5 +1,5 @@
 {
-  "name": "required-file-changes-action",
+  "name": "required-file-changes",
   "version": "0.0.1",
   "private": true,
   "description": "Action for checking required changes on a pull request",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/minimatch": "^5.1.2",
-    "@types/node": "^16.10.5",
+    "@types/node": "^18.7.16",
     "@typescript-eslint/parser": "^5.36.2",
     "@vercel/ncc": "^0.31.1",
     "eslint": "8.23.0",
