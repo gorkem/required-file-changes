@@ -1,5 +1,5 @@
 {
-  "name": "required-file-changes-action",
+  "name": "required-file-changes",
   "version": "0.0.1",
   "private": true,
   "description": "Action for checking required changes on a pull request",
